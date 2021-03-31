@@ -1,0 +1,2 @@
+# argument $1 is how much power it should have. 50% power is sent like this: .5
+docker run --cpus="$1" --interactive --tty --rm --volume "$(pwd):/home/docker/src/" --workdir "/home/docker/src/" portoleks/in5570v20:latest
