@@ -1,12 +1,13 @@
+
+% @param limitation, how many microseconds you want to delay for each iteration.
+% it is multiplied by 1000, so input of 1000 will make it sleep 1 second (1 000 000 microseconds) each iteration
 const MyHash <- class MyHash[limitation: Integer]
   attached var work : Boolean <- false % false to stop, true to start
   attached var counter : Integer <- 0 % how many iterations this node has done
   const workload <- "This is the workload that is hashed!"
 
-
   initially
-    %check if limitation is within boundries with assert
-    (locate self)$stdout.putstring["initilized\n"]
+    (locate self)$stdout.putstring["I will sleep for " || (limitation*1000).asString || "microseconds\n"]
   end initially
 
   export op startWorking
@@ -58,7 +59,7 @@ const MyHash <- class MyHash[limitation: Integer]
 
       % Sleeping to simulate weaker hardware
       % There is 1 000 000 microseconds in a second.
-      (locate self).delay[Time.create[0,limitation]] % 
+      (locate self).delay[Time.create[0,limitation*1000]] % 
 
       counter <- counter + 1 % count up
 
@@ -147,7 +148,7 @@ const main <- object main
   export function stripLast [ i : String ] -> [ o : String ]
     o <- i.getSlice[ 0, i.length - 1 ]
   end stripLast
-  export function readline -> [ o : String ]
+  export function readline -> [ o : String ] % reads one line from user input
     o <- self.stripLast [ (locate self)$stdin.getstring ]
   end readline
   
@@ -165,7 +166,6 @@ const main <- object main
     end for
   end convertToInt
 
-  
 end main
 
 
