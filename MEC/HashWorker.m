@@ -29,17 +29,17 @@ const HashWorker <- monitor class HashWorker[limitation: Integer]
 
     process
       % (locate self)$stdout.putstring["Worker is starting, iterations:" ||  iterations.asString|| "\n"] %for debugging
-      var garbage : Integer <- 0 % is just to keep a value, the value is never used
+      var garbage : String <- workload % is just to keep a value, the value is never used
 
       const startTime <- (locate self)$timeOfDay
 
       % Work loop. Hashes workload 10000 times, for iterations amount of times
       for i : Integer <- 0 while i<iterations by i <- i + 1
         for y : Integer <- 0 while y<10000 by y <- y + 1
-          garbage <- self.djb2Hash[workload] 
+          garbage <- self.djb2Hash[garbage].asString
         end for
         % (locate self)$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
-        (locate self).delay[Time.create[0,limitation*1000]] % 
+        (locate self).delay[Time.create[0,limitation*1000]] % Sleep to simulate worse hardware
       end for
 
       const endTime <- (locate self)$timeOfDay
