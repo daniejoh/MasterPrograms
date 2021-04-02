@@ -1,11 +1,8 @@
 const A <- class A[name: String]
 
-  const instanceOfB <- B.create
+  attached const instanceOfB <- B.create
 
-  
-
-
-  const B <- monitor class B
+  attached const B <- monitor class B
     const c : Condition <- Condition.create
 
     var youHaveToWait : Boolean <- true
@@ -26,25 +23,23 @@ const A <- class A[name: String]
     export op setyouHaveToWait[temp : Boolean]
       youHaveToWait <- temp
     end setyouHaveToWait
-
-
-
   end B
 
-  const Worker <- class Worker
+
+  attached const Worker <- class Worker
     process
       const startTime <- (locate self)$timeOfDay
       for i : Integer <- 0 while i<3 by i <- i + 1
 
-        (locate self)$stdout.putstring["this happens!" || name || "\n"]
+        (locate self)$stdout.putstring["this happens!" || name || "\n"] stdout.flush
         (locate self).delay[Time.create[0,500000]] % 
       end for
       const endTime <- (locate self)$timeOfDay
       instanceOfB.setTimeTaken[endTime - startTime]
-      (locate self)$stdout.putstring["This happensssss "|| instanceOfB.getTimeTaken.asString||"\n"]
+      (locate self)$stdout.putstring["This happensssss "|| instanceOfB.getTimeTaken.asString||"\n"] stdout.flush
       %instanceOfB.continueSome
       instanceOfB.setyouHaveToWait[false]
-     % assert false
+      % assert false
     end process
   end Worker
   
@@ -53,35 +48,45 @@ const A <- class A[name: String]
 
   export op doWork
     const werk <- Worker.create
-    (locate self)$stdout.putstring["Do work done: " || name || "\n"]
+    (locate self)$stdout.putstring["Do work done: " || name || "\n"]stdout.flush
   end doWork
 
   export op collectResult -> [res: Time]
     % wait until process is done
-    (locate self)$stdout.putstring[name || " starts waiting\n"]
+    (locate self)$stdout.putstring[name || " starts waiting\n"]stdout.flush
+    assert false
     %instanceOfB.waitSome
     loop
       exit when !instanceOfB.getyouHaveToWait
-      (locate self).delay[Time.create[0,500000]] % 
-      (locate self)$stdout.putstring["yhtw: " || instanceOfB.getyouHaveToWait.asString || "\n"]
+      %(locate self).delay[Time.create[0,500000]] % 
+      %(locate self)$stdout.putstring["yhtw: " || instanceOfB.getyouHaveToWait.asString || "\n"]stdout.flush
     end loop
     %assert false
-    (locate self)$stdout.putstring[name || " stops waiting, and returning " || instanceOfB.gettimeTaken.asString ||"\n"]
+    (locate self)$stdout.putstring[name || " stops waiting, and returning " || instanceOfB.gettimeTaken.asString ||"\n"]stdout.flush
     res <- instanceOfB.getTimeTaken
   end collectResult
 
-% doWork bli kalt
-% doWork må lage en prossess
-% doWork må vente på at prossess er ferdig
-% Sjekk så en felles variabel som inneholder "returnverdi"
-% return denne verdien.
 end A
 
 
 const main <- object main
   initially
+
+    const home <- locate self
+    var there : Node
+    var all : NodeList
+
+
     const first <- A.create["first"]
     const second <- A.create["second"]
+
+    all <- home.getActiveNodes  
+    (locate self)$stdout.putstring["Number of active nodes: " || (all.upperbound+1).asString ||"\n"]
+    for i : Integer <- 1 while i <= all.upperbound by i <- i + 1
+      there <- all[i]$theNode % get node for printing and refixing
+      %(locate self)$stdout.putstring["This haaaaapens\n"]
+      refix second at there
+    end for
 
     first.doWork
     second.doWork
@@ -89,33 +94,12 @@ const main <- object main
     const resultFirst <- first.collectResult
     const resultSecond <- second.collectResult
     (locate self)$stdout.putstring["Both are done!\n"]
-    (locate self)$stdout.putstring["Result from first: "|| resultFirst.asString ||"\n"]
-    (locate self)$stdout.putstring["Result from second: "|| resultSecond.asString ||"\n"]
+    (locate self)$stdout.putstring["Result from first: "|| resultFirst.asString ||"\n"]stdout.flush
+    (locate self)$stdout.putstring["Result from second: "|| resultSecond.asString ||"\n"]stdout.flush
   end initially
 
 end main
 
-
-
-const Semaphore <- monitor class Semaphore [initial : Integer]
-  class export operation create -> [r : Semaphore]
-    r <- Semaphore.create[1]
-  end create
-  var count : Integer <- initial
-  var waiters : Condition <- Condition.create
-  export operation acquire 
-    count <- count - 1
-    if count < 0 then
-      wait waiters
-    end if
-  end acquire
-  export operation release
-    count <- count + 1
-    if count <= 0 then
-      signal waiters
-    end if
-  end release
-end Semaphore
 
 
 % for 2 noder

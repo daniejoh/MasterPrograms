@@ -2,17 +2,17 @@
 withClean: run clean
 
 remote: compile
-	emx -U -R$(ARGS) HashLoad.x
+	emx -U -R$(ARGS) Hashworker.x Main.x
 
 run: compile
-	emx HashLoad.x
+	emx Hashworker.x Main.x
 	
 compile:
-	ec HashLoad.m
+	ec Hashworker.m Main.m
 
 
 debug: compile
-	emx -i HashLoad.x
+	emx -i Hashworker.x Main.x
 
 
 
