@@ -38,7 +38,7 @@ const HashWorker <- monitor class HashWorker[limitation: Integer]
         for y : Integer <- 0 while y<10000 by y <- y + 1
           garbage <- self.djb2Hash[garbage].asString
         end for
-        % (locate self)$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
+        (locate self)$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
         (locate self).delay[Time.create[0,limitation*1000]] % Sleep to simulate worse hardware
       end for
 
