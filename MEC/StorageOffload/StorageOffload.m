@@ -29,18 +29,20 @@ const SendFile <- class SendFile[iStream : InStream, recv: RecieveFile]
 end SendFile
 
 const RecieveFile <- class RecieveFile
-  %attached var oStream : OutStream <- nil
+  attached var oStream : OutStream <- nil
   export op init
-    %oStream <- outstream.toUnix["OUT_file.txt", "rw"]
+    oStream <- outstream.toUnix["OUT_file.txt", "a"]
+    % assert false
     (locate self)$stdout.putstring["init skjer\n"]
   end init
 
   export op recieve[line: String]
     (locate self)$stdout.putstring["Dette skjer: " || line || "\n"]
-    const oStream <- OutStream.toUnix["OUT_file.txt", "a"]
+    %const oStream <- OutStream.toUnix["OUT_file.txt", "a"]
+    % assert false
     oStream.putString[line]
     oStream.flush
-    oStream.close
+    %oStream.close
   end recieve
 end RecieveFile
 
