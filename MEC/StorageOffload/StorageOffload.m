@@ -12,16 +12,19 @@ const SendFile <- class SendFile[iStream : InStream, recv: RecieveFile]
       exit when iStream.eos
       begin
         (locate self)$stdout.putstring["En itersjon\n"]
-        % for i : Integer <- 0 while (i<10) by i <- i + 1 % send 10 lines at a time
-          (locate self)$stdout.putstring["reee\n"]
-          line <- line || iStream.getString % get one line
-        % end for
+        for i : Integer <- 0 while i<10 by i <- i + 1 % send 10 lines at a time
+          if !iStream.eos then
+            (locate self)$stdout.putstring["reee" || i.asString ||"\n"]
+            line <- line || iStream.getString % get one line
+          end if
+        end for
         % send line
         recv.recieve[line]
         %reset line
         line <- ""
       end
     end loop
+    (locate self)$stdout.putstring["Loop is done\n"]
   end send
 end SendFile
 
@@ -34,8 +37,8 @@ const RecieveFile <- class RecieveFile
 
   export op recieve[line: String]
     (locate self)$stdout.putstring["Dette skjer: " || line || "\n"]
-    const oStream <- OutStream.toUnix["OUT_file.txt", "wb"]
-    oStream.putString[line || "\n"]
+    const oStream <- OutStream.toUnix["OUT_file.txt", "a"]
+    oStream.putString[line]
     oStream.flush
     oStream.close
   end recieve
@@ -66,9 +69,9 @@ const main <- object main
 
     there <- all[1]$theNode
 
-    const aaa <- OutStream.toUnix["reee.txt", "w"]
-    aaa.putString["reeeee"]
-    aaa.flush
+    % const aaa <- OutStream.toUnix["reee.txt", "w"]
+    % aaa.putString["reeeee"]
+    % aaa.flush
 
     const recvF <- RecieveFile.create
     refix recvF at there
