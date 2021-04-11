@@ -2,24 +2,17 @@
 export HashWorker
 % @param limitation, how many microseconds you want to delay for each iteration.
 % it is multiplied by 1000, so input of 1000 will make it sleep 1 second (1 000 000 microseconds) each iteration
-const HashWorker <- monitor class HashWorker[limitation: Integer]
+const HashWorker <- class HashWorker[limitation: Integer]
+  
   attached const workload <- "This is the workload that is hashed!"
 
-  attached const mon <- InternalMonitor.create
+  attached const mon <- InnerMonitor.create
 
-  attached const InternalMonitor <- monitor class InternalMonitor
-    var waiting : Boolean <- true
+  attached const InnerMonitor <- monitor class InnerMonitor
+    field waiting : Boolean <- true
 
     field timeTaken : Time <- nil
-
-    export op setWaiting[w: Boolean]
-      waiting <- w
-    end setWaiting
-
-    export op getWaiting -> [res: Boolean]
-      res <- waiting
-    end getWaiting
-  end InternalMonitor
+  end InnerMonitor
 
 
   attached const Worker <- class Worker[iterations: Integer]
@@ -60,6 +53,7 @@ const HashWorker <- monitor class HashWorker[limitation: Integer]
   end Worker
 
   initially
+    assert limitation >= 0 % limitation must be 0 or higher
     (locate self)$stdout.putstring["I will sleep for " || (limitation*1000).asString || " microseconds\n"]
   end initially
 
@@ -81,11 +75,3 @@ const HashWorker <- monitor class HashWorker[limitation: Integer]
     res <- mon.getTimeTaken
   end collectTimeUsed
 end HashWorker
-
-
-
-
-
-
-% should timeTaken be measures by the caller or callee
-% good to ahve both, as we then can subtract to get ping

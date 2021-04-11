@@ -7,14 +7,17 @@
 const SendFile <- class SendFile[iStream : InStream, recv: RecieveFile]
   export op send
     var line : String <- ""
-
+    
+    const startTime <- (locate self)$timeOfDay
     loop
       exit when iStream.eos
       begin
-        (locate self)$stdout.putstring["En itersjon\n"]
-        for i : Integer <- 0 while i<10 by i <- i + 1 % send 10 lines at a time
+        %(locate self)$stdout.putstring["En itersjon\n"]
+        % send 110 lines at a time
+        %   Tested with several numbers, but 110 was the fastest if each line is 31 characters long
+        for i : Integer <- 0 while i<110 by i <- i + 1 
           if !iStream.eos then
-            (locate self)$stdout.putstring["reee" || i.asString ||"\n"]
+            %(locate self)$stdout.putstring["reee" || i.asString ||"\n"]
             line <- line || iStream.getString % get one line
           end if
         end for
@@ -24,24 +27,27 @@ const SendFile <- class SendFile[iStream : InStream, recv: RecieveFile]
         line <- ""
       end
     end loop
-    (locate self)$stdout.putstring["Loop is done\n"]
+    const endTime <- (locate self)$timeOfDay
+    (locate self)$stdout.putstring["Loop is done, time used:" || (endTime-startTime).asString || "\n"]
   end send
 end SendFile
 
 const RecieveFile <- class RecieveFile
   attached var oStream : OutStream <- nil
   export op init
-    oStream <- outstream.toUnix["OUT_file.txt", "a"]
+    oStream <- outstream.toUnix["OUTfile.txt", "wb"]
+    oStream <- outstream.toUnix["OUTfile.txt", "a"]
+    %(locate self)$stdout.putstring["Dette skjer\n"]
     % assert false
-    (locate self)$stdout.putstring["init skjer\n"]
+    %(locate self)$stdout.putstring["init skjer\n"]
   end init
 
   export op recieve[line: String]
-    (locate self)$stdout.putstring["Dette skjer: " || line || "\n"]
+    %(locate self)$stdout.putstring["Dette skjer: " || line || "\n"]
     %const oStream <- OutStream.toUnix["OUT_file.txt", "a"]
     % assert false
     oStream.putString[line]
-    oStream.flush
+    oStream.flush 
     %oStream.close
   end recieve
 end RecieveFile
@@ -76,9 +82,9 @@ const main <- object main
     % aaa.flush
 
     const recvF <- RecieveFile.create
-    refix recvF at there
+    refix recvF at there  
 
-    const iStr <- inStream.fromUnix["IN_file.txt", "r"]
+    const iStr <- inStream.fromUnix["../100mb.txt", "r"]
     const sendF <- SendFile.create[iStr, recvF]
 
     recvF.init

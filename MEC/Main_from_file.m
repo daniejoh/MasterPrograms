@@ -4,7 +4,7 @@ const main <- object main
     const home <- locate self
     var there : Node
     var all : NodeList
-    const hashArr <- Array.of[HashWorker].empty
+    const hashWorkerArray <- Array.of[HashWorker].empty
     
 
     home$stdout.PutString["Starting on " || home$name || "\n"]
@@ -23,88 +23,58 @@ const main <- object main
     end for
     refix self at home
 
-    % prompt: "how much limit on index 0" then 1 and so on
 
     % read config
     const fr <- FileReader.create
     const lines <- fr.readFile["MEC_simple.config"] % Array.of[String]
 
-    %convert string lines to int
-    const config <- Array.of[Integer].empty
+    const config <- fr.convertConfigToIntegers[lines]
     var configLineCounter : Integer <- 0
-    for i : Integer <- 0 while i<=lines.upperbound by i <- i + 1 %TODO doublecheck that you get each line!
-      config.addUpper[self.convertToInt[lines.getElement[i]]]
-    end for
     
-    (locate self)$stdout.putstring["Lines: "|| lines.upperbound.asString || "\n"]
-    (locate self)$stdout.putstring["Config: "|| config.upperbound.asString || "\n"]
+    (locate self)$stdout.putstring["Lines: "|| lines.upperbound.asString || "\n"] %for debug
+    (locate self)$stdout.putstring["Config: "|| config.upperbound.asString || "\n"] %for debug
 
 
 
-    % use config to create the needed nodes etc
+    % use config to create the needed HashWorkers and place them on nodes
     %(locate self)$stdout.putstring["Upperbound of config:" || config.upperbound.asString || "\n"]
     for i : Integer <- 0 while i<((config.upperbound+1) / 2) by i <- i + 1
       var temp : HashWorker <- HashWorker.create[config.getElement[configLineCounter]] % create hash class instance
       configLineCounter <- configLineCounter + 1
-      hashArr.addUpper[temp]
+      hashWorkerArray.addUpper[temp]
       there <- all[i]$theNode % get node for printing and refixing
-      there$stdout.putString["Initilizing " || there$name || "\n"]
-      refix temp at there
+      begin
+        there$stdout.putString["Initilizing " || there$name || "\n"]
+        refix temp at there
+        unavailable
+          (locate self)$stdout.putstring["A node was unavailable when placing HashWorkers\n"]
+        end unavailable
+      end
     end for
-
-
     % all nodes should now have a hash object placed locally
-    % when conducting the expirements, use mac as a watchdog and servers as actual nodes(mac can ofc be the local object, but throttle it)
-    for i : Integer <- 0 while i<=hashArr.upperbound by i <- i + 1
-      (locate self)$stdout.putstring["Starting "|| i.asString || "\n"]
-      const tmp <- hashArr.getElement[i] % get the hashing object
-      % (locate tmp)$stdout.putstring[(locate tmp)$name || " is starting\n"]
-      tmp.doWork[config.getElement[configLineCounter]]
-      configLineCounter <- configLineCounter + 1
 
+    % make the nodes start working
+    for i : Integer <- 0 while i<=hashWorkerArray.upperbound by i <- i + 1
+      (locate self)$stdout.putstring["Starting "|| i.asString || "\n"]
+      const tmp <- hashWorkerArray.getElement[i] % get the hashing object
+      % (locate tmp)$stdout.putstring[(locate tmp)$name || " is starting\n"]
+      tmp.doWork[config.getElement[configLineCounter]] %start working with number of times given in config
+      configLineCounter <- configLineCounter + 1
     end for
 
-
+    
+    % collect and print times
     var tempTime : Time <- nil
     var tempHashWorker : HashWorker <- nil
-    for i : Integer <- 0 while i<=hashArr.upperbound by i <- i + 1
-      tempHashWorker <- hashArr[i]
+    for i : Integer <- 0 while i<=hashWorkerArray.upperbound by i <- i + 1
+      tempHashWorker <- hashWorkerArray[i]
       tempTime <- tempHashWorker.collectTimeUsed
       (locate self)$stdout.putstring["Node " || i.asString || " used time: " || tempTime.asString ||"\n"]
-
-      
     end for
 
     
     (locate self)$stdout.putstring["Main done!\n"]
   end initially
-
-
-
-  % from github.com/emerald examples repository
-  export function stripLast [ i : String ] -> [ o : String ]
-    o <- i.getSlice[ 0, i.length - 1 ]
-  end stripLast
-  export function readline -> [ o : String ] % reads one line from user input
-    o <- self.stripLast [ (locate self)$stdin.getstring ]
-  end readline
-  
-
-
-
-  % Converts string to Integer
-  export function convertToInt [input : String] -> [o : Integer]
-    %(locate self)$stdout.putstring["Input: " || input ||"\n"]
-    o <- 0
-    var actual : Integer
-    for i : Integer <- 0 while i<=input.upperbound by i <- i + 1
-      actual <- (input.getElement[i].ord - 48) % convert from character value to int
-      %(locate self)$stdout.putstring["Actual uten minus 48: " || input.getElement[i].ord.asString || "\n"]
-      %(locate self)$stdout.putstring["Actual: "|| actual.asString ||"\n"]
-      o <- o * 10 % For each extra number we have to multiply by ten
-      o <- o + actual 
-    end for
-  end convertToInt
 
 end main
 
