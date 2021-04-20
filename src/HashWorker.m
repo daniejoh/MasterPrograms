@@ -54,18 +54,20 @@ const HashWorker <- class HashWorker[limitation: Integer]
 
   initially
     assert limitation >= 0 % limitation must be 0 or higher
-    (locate self)$stdout.putstring["I will sleep for " || (limitation*1000).asString || " microseconds\n"]
+    refix limitation at self 
+    %(locate self)$stdout.putstring["I will sleep for " || (limitation*1000).asString || " microseconds\n"]
   end initially
 
   export op setLimitation[lim: Integer]
     limitation <- lim
   end setLimitation
 
-
+  % start the Worker
   export op doWork[iterations: Integer]
     const w <- Worker.create[iterations]
   end doWork
 
+  % Collect time used after Worker is done
   export op collectTimeUsed -> [res: Time]
     loop
       exit when !mon.getWaiting

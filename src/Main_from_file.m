@@ -36,13 +36,23 @@ const main <- object main
 
 
 
+    var limit: Integer <- nil
+    var temp : HashWorker <- nil
+    var input: String <- nil
+    var inputAsInt: Integer <- nil
     % use config to create the needed HashWorkers and place them on nodes
     %(locate self)$stdout.putstring["Upperbound of config:" || config.upperbound.asString || "\n"]
     for i : Integer <- 0 while i<((config.upperbound+1) / 2) by i <- i + 1
-      var temp : HashWorker <- HashWorker.create[config.getElement[configLineCounter]] % create hash class instance
+      limit <- config.getElement[configLineCounter]
+      temp <- HashWorker.create[limit] % create hash class instance
       configLineCounter <- configLineCounter + 1
       hashWorkerArray.addUpper[temp]
-      there <- all[i]$theNode % get node for printing and refixing
+
+      % take input from user
+      (locate self)$stdout.putstring["Where should HashWorker with limitation " || limit.asString || " be placed? (index of node):\n"]
+      input <- self.readLine
+      inputAsInt <- self.convertToInt[input]
+      there <- all[inputAsInt]$theNode % get node for printing and refixing
       begin
         there$stdout.putString["Initilizing " || there$name || "\n"]
         refix temp at there
@@ -76,6 +86,30 @@ const main <- object main
     (locate self)$stdout.putstring["Main done!\n"]
   end initially
 
+  % ------- Utils for reading userinput from terminal ---------------
+
+  % from github.com/emerald examples repository
+  function stripLast [ i : String ] -> [ o : String ]
+    o <- i.getSlice[ 0, i.length - 1 ]
+  end stripLast
+  function readline -> [ o : String ] % reads one line from user input
+    o <- self.stripLast [ (locate self)$stdin.getstring ]
+  end readline
+
+  % Converts string to Integer
+  function convertToInt [input : String] -> [o : Integer]
+    %(locate self)$stdout.putstring["Input: " || input ||"\n"]
+    o <- 0
+    var actual : Integer
+    for i : Integer <- 0 while i<=input.upperbound by i <- i + 1
+      actual <- (input.getElement[i].ord - 48) % convert from character value to int
+      %(locate self)$stdout.putstring["Actual uten minus 48: " || input.getElement[i].ord.asString || "\n"]
+      %(locate self)$stdout.putstring["Actual: "|| actual.asString ||"\n"]
+      o <- o * 10 % For each extra number we have to multiply by ten
+      o <- o + actual 
+    end for
+  end convertToInt
+  
 end main
 
 
