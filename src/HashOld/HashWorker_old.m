@@ -23,42 +23,19 @@ const HashWorker <- class HashWorker[limitation: Integer]
     process
       % (locate self)$stdout.putstring["Worker is starting, iterations:" ||  iterations.asString|| "\n"] %for debugging
       var garbage : String <- workload % is just to keep a value, the value is never used
-      const location <- (locate self)
-      const startTime <- location$timeOfDay
 
-      var tempIterations : Integer <- 0
-
-      var tempTime : Time <- location$timeOfDay %t1
-      var timeFrame : Time <- nil
-
-      const oneSecond <- Time.create[1,0]
+      const startTime <- (locate self)$timeOfDay
 
       % Work loop. Hashes workload 10000 times, for iterations amount of times
       for i : Integer <- 0 while i<iterations by i <- i + 1
-
-        % if tempIterations is equal to or bigger than limit
-        %  AND it has not yet passed 1 second since last limitation amount of iterations
-          %tf  =    t2    -  t1
-        timeFrame <- location$timeOfDay-tempTime
-        if tempIterations >= limitation and timeFrame < oneSecond then
-          % delay until 1 second from tempTime
-          location.delay[oneSecond-timeFrame]
-          tempIterations <- 0
-          tempTime <- location$timeOfDay
-        elseif timeFrame >= oneSecond then
-          tempIterations <- 0
-          tempTime <- location$timeOfDay
-        end if
-
-
         for y : Integer <- 0 while y<10000 by y <- y + 1
           garbage <- self.djb2Hash[garbage].asString
         end for
-        location$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
-        tempIterations <- tempIterations + 1
+        (locate self)$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
+        (locate self).delay[Time.create[0,limitation*1000]] % Sleep to simulate worse hardware
       end for
 
-      const endTime <- location$timeOfDay
+      const endTime <- (locate self)$timeOfDay
 
       mon.setTimeTaken[endTime - startTime] % "return value" from process
 
@@ -87,7 +64,6 @@ const HashWorker <- class HashWorker[limitation: Integer]
 
   % start the Worker
   export op doWork[iterations: Integer]
-    (locate self)$stdout.putstring["I will do " ||iterations.asString||" iterations\n"]
     const w <- Worker.create[iterations]
   end doWork
 

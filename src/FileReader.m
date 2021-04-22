@@ -18,7 +18,7 @@ const FileReader <- immutable class FileReader
       exit when stream.eos
       begin
         line <- self.stripLast[stream.getString]
-        %(locate self)$stdout.putstring[line || "\n"]
+        % (locate self)$stdout.putstring[line || "\n"] % for DEBUG
         res.addUpper[line]
       end 
     end loop

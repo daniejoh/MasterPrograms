@@ -26,13 +26,14 @@ const main <- object main
 
     % read config
     const fr <- FileReader.create
-    const lines <- fr.readFile["MEC_simple.config"] % Array.of[String]
+    const lines <- fr.readFile["configs/MEC_Full_near_far.config"] % Array.of[String]
+    % const lines <- fr.readFile["MEC_partial_near_far.config"]
 
     const config <- fr.convertConfigToIntegers[lines]
     var configLineCounter : Integer <- 0
     
-    (locate self)$stdout.putstring["Lines: "|| lines.upperbound.asString || "\n"] %for debug
-    (locate self)$stdout.putstring["Config: "|| config.upperbound.asString || "\n"] %for debug
+    (locate self)$stdout.putstring["Lines: "|| (lines.upperbound+1).asString || "\n"] %for debug
+    (locate self)$stdout.putstring["Config: "|| (config.upperbound+1).asString || "\n"] %for debug
 
 
 
@@ -64,11 +65,14 @@ const main <- object main
     % all nodes should now have a hash object placed locally
 
     % make the nodes start working
+    var swork : SomeWork <- SomeWork.create %workload that can be moved
     for i : Integer <- 0 while i<=hashWorkerArray.upperbound by i <- i + 1
       (locate self)$stdout.putstring["Starting "|| i.asString || "\n"]
       const tmp <- hashWorkerArray.getElement[i] % get the hashing object
       % (locate tmp)$stdout.putstring[(locate tmp)$name || " is starting\n"]
-      tmp.doWork[config.getElement[configLineCounter]] %start working with number of times given in config
+
+      % tmp.refixWorkloadToMobileDevice[home] % for latency test
+      tmp.doWork[config.getElement[configLineCounter], swork] %start working with number of times given in config
       configLineCounter <- configLineCounter + 1
     end for
 

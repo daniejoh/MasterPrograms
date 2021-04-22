@@ -1,7 +1,8 @@
 
+# %%
 import matplotlib.pyplot as plt
 import numpy as np
-
+plt.rcParams["font.family"] = "CMU Serif"
 
 # source ./bin/activate
 
@@ -19,9 +20,9 @@ plt.plot(x, speedup, '.-', label="speedup")
 plt.xlabel("value of N")
 plt.ylabel("Speedup relative to seq version")
 # plt.yscale('log')
-plt.xscale('log')
 plt.grid(True)
-plt.title("Speedup for factor") 
+plt.title("REEE") 
 # plt.legend()
-# plt.show()
-plt.savefig("speedup_factor.png")
+plt.show()
+#plt.savefig("speedup_factor.png")
+# %%

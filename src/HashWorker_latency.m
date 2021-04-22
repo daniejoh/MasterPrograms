@@ -4,7 +4,7 @@ export HashWorker
 % it is multiplied by 1000, so input of 1000 will make it sleep 1 second (1 000 000 microseconds) each iteration
 const HashWorker <- class HashWorker[limitation: Integer]
   
-  attached const workload <- "This is the workload that is hashed!"
+  % const workload <- "This is the workload that is hashed!"
 
   attached const mon <- InnerMonitor.create
 
@@ -15,14 +15,14 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end InnerMonitor
 
 
-  attached const Worker <- class Worker[iterations: Integer]
+  attached const Worker <- class Worker[iterations: Integer, work: SomeWork]
     initially
       assert iterations > 0 % cannot iterate negative amount of times
     end initially
 
     process
       % (locate self)$stdout.putstring["Worker is starting, iterations:" ||  iterations.asString|| "\n"] %for debugging
-      var garbage : String <- workload % is just to keep a value, the value is never used
+      var garbage : String <- work$work % is just to keep a value, the value is never used
       const location <- (locate self)
       const startTime <- location$timeOfDay
 
@@ -35,7 +35,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
 
       % Work loop. Hashes workload 10000 times, for iterations amount of times
       for i : Integer <- 0 while i<iterations by i <- i + 1
-
+        garbage <- work$work
         % if tempIterations is equal to or bigger than limit
         %  AND it has not yet passed 1 second since last limitation amount of iterations
           %tf  =    t2    -  t1
@@ -54,7 +54,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
         for y : Integer <- 0 while y<500 by y <- y + 1
           garbage <- self.djb2Hash[garbage].asString
         end for
-        % location$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
+        location$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
         tempIterations <- tempIterations + 1
       end for
 
@@ -63,6 +63,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
       mon.setTimeTaken[endTime - startTime] % "return value" from process
 
       mon.setWaiting[false]
+      (locate self)$stdout.putstring["Process is done\n"]
       % assert false
     end process
 
@@ -77,7 +78,8 @@ const HashWorker <- class HashWorker[limitation: Integer]
 
   initially
     assert limitation >= 0 % limitation must be 0 or higher
-    refix limitation at self 
+    refix limitation at (locate self) 
+    % refix workload at (locate self)
     %(locate self)$stdout.putstring["I will sleep for " || (limitation*1000).asString || " microseconds\n"]
   end initially
 
@@ -86,10 +88,16 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end setLimitation
 
   % start the Worker
-  export op doWork[iterations: Integer]
+  export op doWork[iterations: Integer, work: SomeWork]
     (locate self)$stdout.putstring["Starting to do " ||iterations.asString||" iterations\n"]
-    const w <- Worker.create[iterations]
+    % refix work at (locate self)
+    const w <- Worker.create[iterations, work]
   end doWork
+
+
+  % export op refixWorkloadToMobileDevice[n : Node]
+  %   refix workload at n
+  % end refixWorkloadToMobileDevice
 
   % Collect time used after Worker is done
   export op collectTimeUsed -> [res: Time]
@@ -101,3 +109,8 @@ const HashWorker <- class HashWorker[limitation: Integer]
     res <- mon.getTimeTaken
   end collectTimeUsed
 end HashWorker
+
+export SomeWork
+const SomeWork <- class SomeWork
+  attached field work : String <- "lalalalallala"
+end SomeWork
