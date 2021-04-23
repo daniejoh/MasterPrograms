@@ -10,19 +10,27 @@ plt.rcParams["font.family"] = "CMU Serif"
 
 
 
-speedup = [0.720, 1.713, 3.990, 4.183]
+near_time = [20, 40, 70, 110, 130]
+far_time = [10, 30, 60, 150, 200]
+
+
+# higher X is worse
 
 
 
-x = [2000000,20000000,200000000,2000000000]
-plt.plot(x, speedup, '.-', label="speedup")
+xaxis = [1,10,100,1000, 10000]
+plt.plot(xaxis, near_time, '.-', label="Near")
+plt.plot(xaxis, far_time, '.-', label="Far")
 
-plt.xlabel("value of N")
-plt.ylabel("Speedup relative to seq version")
+
+
+plt.xlabel(r"N times we get from Local for every $\dfrac{X}{10000}$")
+plt.ylabel("Time used")
 # plt.yscale('log')
+plt.xscale('log')
 plt.grid(True)
-plt.title("REEE") 
-# plt.legend()
+plt.title("Time used vs rate of retrieveing from Local") 
+plt.legend()
 plt.show()
 #plt.savefig("speedup_factor.png")
 # %%

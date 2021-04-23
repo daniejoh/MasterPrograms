@@ -15,7 +15,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end InnerMonitor
 
 
-  attached const Worker <- class Worker[iterations: Integer, work: SomeWork]
+  attached const Worker <- class Worker[iterations: Integer, work: SomeWork, howOften: Integer]
     initially
       assert iterations > 0 % cannot iterate negative amount of times
     end initially
@@ -35,7 +35,9 @@ const HashWorker <- class HashWorker[limitation: Integer]
 
       % Work loop. Hashes workload 10000 times, for iterations amount of times
       for i : Integer <- 0 while i<iterations by i <- i + 1
-        garbage <- work$work
+        if (i # howOften) = 0 then
+          garbage <- work$work
+        end if
         % if tempIterations is equal to or bigger than limit
         %  AND it has not yet passed 1 second since last limitation amount of iterations
           %tf  =    t2    -  t1
@@ -88,10 +90,10 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end setLimitation
 
   % start the Worker
-  export op doWork[iterations: Integer, work: SomeWork]
+  export op doWork[iterations: Integer, work: SomeWork, howOften: Integer]
     (locate self)$stdout.putstring["Starting to do " ||iterations.asString||" iterations\n"]
     % refix work at (locate self)
-    const w <- Worker.create[iterations, work]
+    const w <- Worker.create[iterations, work, howOften]
   end doWork
 
 

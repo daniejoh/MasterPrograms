@@ -26,8 +26,9 @@ const main <- object main
 
     % read config
     const fr <- FileReader.create
-    const lines <- fr.readFile["configs/MEC_Full_near_far.config"] % Array.of[String]
+    % const lines <- fr.readFile["configs/MEC_Full_near_far.config"] % Array.of[String]
     % const lines <- fr.readFile["MEC_partial_near_far.config"]
+    const lines <- fr.readFile["configs/balance_latency.config"]
 
     const config <- fr.convertConfigToIntegers[lines]
     var configLineCounter : Integer <- 0
@@ -72,7 +73,7 @@ const main <- object main
       % (locate tmp)$stdout.putstring[(locate tmp)$name || " is starting\n"]
 
       % tmp.refixWorkloadToMobileDevice[home] % for latency test
-      tmp.doWork[config.getElement[configLineCounter], swork] %start working with number of times given in config
+      tmp.doWork[config.getElement[configLineCounter], swork, 10] %start working with number of times given in config
       configLineCounter <- configLineCounter + 1
     end for
 
