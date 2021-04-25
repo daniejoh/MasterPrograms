@@ -31,14 +31,31 @@ const HashWorker <- class HashWorker[limitation: Integer]
       var tempTime : Time <- location$timeOfDay %t1
       var timeFrame : Time <- nil
 
+
+      var totalLatencyTime : Time <- Time.create[0,0]
+      var lastLatencyTime : Time <- Time.create[0,0]
+
+      var totalComputationTime : Time <- Time.create[0,0]
+      var lastComputationTime : Time <- Time.create[0,0]
+
       const oneSecond <- Time.create[1,0]
 
       % Work loop. Hashes workload 10000 times, for iterations amount of times
       for i : Integer <- 0 while i<iterations by i <- i + 1
+
+
+        lastLatencyTime <- location$timeOfDay
+        % only get every howOften from local
         if (i # howOften) = 0 then
           garbage <- work$work
         end if
-        % if tempIterations is equal to or bigger than limit
+        %totalLatencyTime += time used for getting from local
+        totalLatencyTime <- totalLatencyTime + (location$timeOfDay - lastLatencyTime)
+
+
+
+        lastComputationTime <- location$timeOfDay %timing of computation, includes waiting for fps
+        %if tempIterations is equal to or bigger than limit
         %  AND it has not yet passed 1 second since last limitation amount of iterations
           %tf  =    t2    -  t1
         timeFrame <- location$timeOfDay-tempTime
@@ -56,13 +73,23 @@ const HashWorker <- class HashWorker[limitation: Integer]
         for y : Integer <- 0 while y<500 by y <- y + 1
           garbage <- self.djb2Hash[garbage].asString
         end for
+        %totalComputationTime += time used calulating
+        totalComputationTime <- totalComputationTime + (location$timeOfDay - lastComputationTime)
+
+
         location$stdout.putstring["On iteration " ||i.asString|| "\n"] %for debugging
         tempIterations <- tempIterations + 1
+        
       end for
+
 
       const endTime <- location$timeOfDay
 
       mon.setTimeTaken[endTime - startTime] % "return value" from process
+
+      (locate self)$stdout.putstring["Total time used on computation: " || totalComputationTime.asString || "\n"]
+      (locate self)$stdout.putstring["Total time used on waiting for get: " || totalLatencyTime.asString || "\n"]
+
 
       mon.setWaiting[false]
       (locate self)$stdout.putstring["Process is done\n"]
