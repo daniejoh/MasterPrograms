@@ -10,27 +10,27 @@ plt.rcParams["font.family"] = "CMU Serif"
 
 
 
-near_time = [20, 40, 70, 110, 130]
-far_time = [10, 30, 60, 150, 200]
+near_time = [32.2, 9.7, 9.5, 9.3, 9.2, 9.2]
+far_time = [185.1, 36.7, 18.4, 9.5, 5.3, 3.12]
 
 
 # higher X is worse
 
 
 
-xaxis = [1,10,100,1000, 10000]
-plt.plot(xaxis, near_time, '.-', label="Near")
-plt.plot(xaxis, far_time, '.-', label="Far")
+xaxis = [1,5,10,20, 40, 80]
+plt.plot(xaxis, near_time, '.-', label="Near (30ms)")
+plt.plot(xaxis, far_time, 'v-', label="Far (170ms)")
 
 
 
-plt.xlabel(r"N times we get from Local for every $\dfrac{X}{10000}$")
-plt.ylabel("Time used")
+plt.xlabel("How often we get from Local (get from Local every x iterations)")
+plt.ylabel("Time used for 1000 iterations (s)")
 # plt.yscale('log')
 plt.xscale('log')
 plt.grid(True)
 plt.title("Time used vs rate of retrieveing from Local") 
 plt.legend()
-plt.show()
-#plt.savefig("speedup_factor.png")
+# plt.show()
+plt.savefig("times.png", dpi=400)
 # %%
