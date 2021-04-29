@@ -15,7 +15,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end InnerMonitor
 
 
-  attached const Worker <- class Worker[iterations: Integer, work: SomeWork, howOften: Integer]
+  attached const Worker <- class Worker[iterations: Integer, work: LocalWorkload, howOften: Integer]
     initially
       assert iterations > 0 % cannot iterate negative amount of times
     end initially
@@ -117,7 +117,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end setLimitation
 
   % start the Worker
-  export op doWork[iterations: Integer, work: SomeWork, howOften: Integer]
+  export op doWork[iterations: Integer, work: LocalWorkload, howOften: Integer]
     (locate self)$stdout.putstring["Starting to do " ||iterations.asString||" iterations\n"]
     % refix work at (locate self)
     const w <- Worker.create[iterations, work, howOften]
@@ -139,7 +139,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end collectTimeUsed
 end HashWorker
 
-export SomeWork
-const SomeWork <- class SomeWork
+export LocalWorkload
+const LocalWorkload <- class LocalWorkload
   attached field work : String <- "lalalalallala"
-end SomeWork
+end LocalWorkload
