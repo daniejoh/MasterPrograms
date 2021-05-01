@@ -15,7 +15,7 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end InnerMonitor
 
 
-  attached const Worker <- class Worker[iterations: Integer, work: LocalWorkload, howOften: Integer]
+  attached const Worker <- class Worker[iterations: Integer, work: LocalWorkload, frequencyOfGet: Integer]
     initially
       assert iterations > 0 % cannot iterate negative amount of times
     end initially
@@ -45,8 +45,8 @@ const HashWorker <- class HashWorker[limitation: Integer]
 
 
         lastLatencyTime <- location$timeOfDay
-        % only get every howOften from local
-        if (i # howOften) = 0 then
+        % only get every frequencyOfGet from local
+        if (i # frequencyOfGet) = 0 then
           garbage <- work$work
         end if
         %totalLatencyTime += time used for getting from local
@@ -117,16 +117,13 @@ const HashWorker <- class HashWorker[limitation: Integer]
   end setLimitation
 
   % start the Worker
-  export op doWork[iterations: Integer, work: LocalWorkload, howOften: Integer]
+  export op doWork[iterations: Integer, work: LocalWorkload, frequencyOfGet: Integer]
     (locate self)$stdout.putstring["Starting to do " ||iterations.asString||" iterations\n"]
     % refix work at (locate self)
-    const w <- Worker.create[iterations, work, howOften]
+    const w <- Worker.create[iterations, work, frequencyOfGet]
   end doWork
 
 
-  % export op refixWorkloadToMobileDevice[n : Node]
-  %   refix workload at n
-  % end refixWorkloadToMobileDevice
 
   % Collect time used after Worker is done
   export op collectTimeUsed -> [res: Time]
@@ -141,5 +138,5 @@ end HashWorker
 
 export LocalWorkload
 const LocalWorkload <- class LocalWorkload
-  attached field work : String <- "lalalalallala"
+  attached field work : String <- "Some random workload"
 end LocalWorkload

@@ -42,6 +42,9 @@ const main <- object main
     (locate self)$stdout.putstring["Lines: "|| (lines.upperbound+1).asString || "\n"] %for debug
     (locate self)$stdout.putstring["Config: "|| (config.upperbound+1).asString || "\n"] %for debug
 
+    const numberOfWorkers <- (config.upperbound+1)/3
+    (locate self)$stdout.putstring["How many workers: " || numberOfWorkers.asString ||"\n"]
+
 
 
     var limit: Integer <- nil
@@ -50,7 +53,7 @@ const main <- object main
     var inputAsInt: Integer <- nil
     % use config to create the needed HashWorkers and place them on nodes
     %(locate self)$stdout.putstring["Upperbound of config:" || config.upperbound.asString || "\n"]
-    for i : Integer <- 0 while i<((config.upperbound+1) / 2) by i <- i + 1
+    for i : Integer <- 0 while i<numberOfWorkers by i <- i + 1
       limit <- config.getElement[configLineCounter]
       temp <- HashWorker.create[limit] % create hash class instance
       configLineCounter <- configLineCounter + 1
@@ -76,20 +79,25 @@ const main <- object main
 
     % make the nodes start working
     var swork : LocalWorkload <- LocalWorkload.create %workload that can be moved
-    var howOften : Array.of[Integer] <- Array.of[Integer].empty
-    howOften.addUpper[1]
-    howOften.addUpper[1]
-    howOften.addUpper[40]
-    var howOftenCounter : Integer <- 0
+    % var frequencyOfGet : Array.of[Integer] <- Array.of[Integer].empty
+    % frequencyOfGet.addUpper[1]
+    % frequencyOfGet.addUpper[1]
+    % frequencyOfGet.addUpper[80]
+    % var frequencyOfGetCounter : Integer <- 0
+    
     for i : Integer <- 0 while i<=hashWorkerArray.upperbound by i <- i + 1
       (locate self)$stdout.putstring["Starting "|| i.asString || "\n"]
       const tmp <- hashWorkerArray.getElement[i] % get the hashing object
       % (locate tmp)$stdout.putstring[(locate tmp)$name || " is starting\n"]
 
       % tmp.refixWorkloadToMobileDevice[home] % for latency test
-      tmp.doWork[config.getElement[configLineCounter], swork, howOften.getElement[howOftenCounter]] %start working with number of times given in config
+      tmp.doWork[
+        config.getElement[(configLineCounter + numberOfWorkers)], %number of iterations
+        swork, %workload
+        config.getElement[configLineCounter] % frequency of get
+      ] %start working with number of times given in config
       configLineCounter <- configLineCounter + 1
-      howOftenCounter <- howOftenCounter + 1
+      % frequencyOfGetCounter <- frequencyOfGetCounter + 1
 
     end for
 

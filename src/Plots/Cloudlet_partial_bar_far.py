@@ -12,12 +12,9 @@ plt.rcParams["font.family"] = "CMU Serif"
 
 N = 3
 #             local, near, far
-calculation = (79.0, 36.5, 0.4)
-waitingForGet = (0, 36.7, 74.7)
-overhead = (0, 1, 1)
+calculation = (24.1, 10.7, 7.9)
+waitingForGet = (0, 13.6, 16.4)
 
-menStd = (2, 3, 4, 1, 2)
-womenStd = (3, 5, 2, 3, 3)
 ind = np.arange(N)    # the x locations for the groups
 width = 0.50       # the width of the bars: can also be len(x) sequence
 #                               width, height
@@ -27,16 +24,15 @@ fig, ax = plt.subplots(figsize=(4,5))
 p1 = ax.bar(ind, calculation, width, label='Calculation', align="center")
 p2 = ax.bar(ind, waitingForGet, width,
             bottom=calculation, label='Waiting for get', align="center")
-p3 = ax.bar(ind, overhead, width, bottom=np.array(calculation)+np.array(waitingForGet), label='Overhead')
 
 # ax.axhline(0, color='grey', linewidth=0.8)
 ax.set_ylabel('Time (s)')
 ax.set_title('Time spent calculating vs waiting for response')
 ax.set_xticks(ind)
 ax.set_xticklabels(('Local', 'Near', 'Far'))
-ax.legend(bbox_to_anchor=(0.05, 0.85, 1., .102), loc='lower left', ncol=2, mode=None, borderaxespad=0.)
+ax.legend(bbox_to_anchor=(0.05, 0.90, 1., .102), loc='lower left', ncol=2, mode=None, borderaxespad=0.)
 # ax.legend()
-ax.set_ylim([-5,100])
+ax.set_ylim([-2,30])
 
 # Label with label_type 'center' instead of the default 'edge'
 ax.bar_label(p1, label_type='center')
@@ -44,8 +40,8 @@ ax.bar_label(p2, label_type='center')
 # ax.bar_label(p3, label_type='center')
 # ax.bar_label(p2)
 
-plt.show()
-# plt.savefig("bar_local_near_far_compare_overhead.png", dpi=400)
+# plt.show()
+plt.savefig("bar_local_near_far_compare_low_interaction.png", dpi=400)
 
 
 

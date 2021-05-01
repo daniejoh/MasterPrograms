@@ -4,6 +4,9 @@ withClean: run clean
 remote: compile
 	emx -U -R$(ARGS) FileReader.x HashWorker_latency.x Main_from_file.x
 
+remoteDebug: compile
+	emx -i -U -R$(ARGS) FileReader.x HashWorker_latency.x Main_from_file.x
+
 run: compile
 	emx FileReader.x HashWorker_latency.x Main_from_file.x
 

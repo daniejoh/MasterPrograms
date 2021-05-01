@@ -181,4 +181,30 @@ Node 2 used time: 3:243270
 
 
 ## other
-Howoften= 40
+30
+100
+300
+750
+2250
+7000
+
+
+howoften 1,1,80
+
+latency 0,3,170
+
+On iteration 749
+Total time used on computation: 24:081123
+Total time used on waiting for get: 0:009571
+Process is done
+Node 0 used time: 24:150296
+Node 1 used time: 24:440527
+Node 2 used time: 24:365529
+
+On iteration 2249
+Total time used on computation: 10:742543
+Total time used on waiting for get: 13:660907
+
+On iteration 6999
+Total time used on computation: 7:920556
+Total time used on waiting for get: 16:411206
