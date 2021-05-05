@@ -12,12 +12,10 @@ plt.rcParams["font.family"] = "CMU Serif"
 
 N = 3
 #             local, near, far
-calculation = (150.8, 17.9, 0.9)
-waitingForGet = (0, 128.6, 154.7)
+calculation = (28.0, 3.4, 8.9)
+waitingForGet = (0.0, 26.3, 19.0)
 # overhead = (0, 20, 0, 0, 20)
 
-menStd = (2, 3, 4, 1, 2)
-womenStd = (3, 5, 2, 3, 3)
 ind = np.arange(N)    # the x locations for the groups
 width = 0.50       # the width of the bars: can also be len(x) sequence
 #                               width, height
@@ -34,9 +32,9 @@ ax.set_ylabel('Time (s)')
 ax.set_title('Time spent calculating vs waiting for response')
 ax.set_xticks(ind)
 ax.set_xticklabels(('Local', 'Near', 'Far'))
-ax.legend(bbox_to_anchor=(0.05, 0.93, 1., .102), loc='lower left', ncol=2, mode=None, borderaxespad=0.)
+ax.legend(bbox_to_anchor=(0.05, 0.90, 1., .102), loc='lower left', ncol=2, mode=None, borderaxespad=0.)
 # ax.legend()
-ax.set_ylim([-5,175])
+ax.set_ylim([-1,35])
 
 # Label with label_type 'center' instead of the default 'edge'
 ax.bar_label(p1, label_type='center')
@@ -45,7 +43,7 @@ ax.bar_label(p2, label_type='center')
 # ax.bar_label(p2)
 
 # plt.show()
-plt.savefig("bar_local_near_far_compare.png", dpi=400)
+plt.savefig("MEC_Partial_bar.png", dpi=400)
 
 
 

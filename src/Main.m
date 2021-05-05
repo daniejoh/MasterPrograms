@@ -26,13 +26,10 @@ const main <- object main
 
     % read config
     const fr <- FileReader.create
-    % const lines <- fr.readFile["configs/MEC_Full_near_far.config"] % Array.of[String]
-    const lines <- fr.readFile["configs/MEC_partial_near_far.config"]
-    % const lines <- fr.readFile["configs/balance_latency.config"]
-    % const lines <- fr.readFile["configs/MEC_local.config"]
-    % const lines <- fr.readFile["configs/Cloudlet_Full_near_far.config"]
-    % const lines <- fr.readFile["configs/Cloudlet_Partial_near_far.config"]
-    % const lines <- fr.readFile["configs/balance.config"]
+    % const lines <- fr.readFile["configs/MEC_Full_low_interaction.config"]
+    % const lines <- fr.readFile["configs/MEC_Partial_low_interaction.config"]
+    const lines <- fr.readFile["configs/Cloudlet_full_low_interaction.config"]
+  
     
 
 

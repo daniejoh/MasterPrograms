@@ -24,7 +24,7 @@ plt.plot(xaxis, far_time, 'v-', label="Far (170ms)")
 
 
 
-plt.xlabel("How often we get from Local (get from Local every x iterations)")
+plt.xlabel("Frequency of interaction with Local")
 plt.ylabel("Time used for 1000 iterations (s)")
 # plt.yscale('log')
 plt.xscale('log')
@@ -32,5 +32,5 @@ plt.grid(True)
 plt.title("Time used vs rate of retrieveing from Local") 
 plt.legend()
 # plt.show()
-plt.savefig("times.png", dpi=400)
+plt.savefig("times.png", dpi=800)
 # %%
